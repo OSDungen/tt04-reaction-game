@@ -5,10 +5,12 @@ USE IEEE.numeric_std.ALL;
 ENTITY ALGORITHMUS IS
 	PORT (
 		clk : IN STD_LOGIC; -- 25 kHz
-		reset: IN STD_LOGIC;
+		rst_n: IN STD_LOGIC;
+		ui_in IN STD_LOGIC_VECTOR(7 DOWNTO 0);
+		uo_out out STD_LOGIC_VECTOR(7 DOWNTO 0);
 		p1_btn_left_in, p1_btn_right_in, p2_btn_left_in, p2_btn_right_in, start_btn_in : IN STD_LOGIC;
 		leds_out : out STD_LOGIC_VECTOR(5 DOWNTO 0)
-		  );
+		);
 END ALGORITHMUS;
 
 
@@ -18,7 +20,7 @@ ARCHITECTURE tt_um_algorithmus_OSDungen OF ALGORITHMUS IS
 	COMPONENT RANDOM IS
 		PORT (
 			clk : IN STD_LOGIC;
-			reset : IN STD_LOGIC;
+			rst_n : IN STD_LOGIC;
 			rnd_8bit_out : OUT STD_LOGIC_VECTOR(7 DOWNTO 0) 
 		);
 	END COMPONENT;
@@ -33,17 +35,30 @@ ARCHITECTURE tt_um_algorithmus_OSDungen OF ALGORITHMUS IS
 	SIGNAL state, next_state : t_state;
 	
 	signal timer_init_500msec, timer_decr, timer_init_rand: std_logic;
+	
+	
+	signal	p1_btn_left_in, p1_btn_right_in, p2_btn_left_in, p2_btn_right_in, start_btn_in : IN STD_LOGIC;
+	signal	leds_out : out STD_LOGIC_VECTOR(5 DOWNTO 0)
     
 BEGIN
 
     I_RANDOM: component RANDOM
     port map (
       clk   => clk,
-      reset => reset,
+      rst_n => rst_n,
       rnd_8bit_out => rnd_8bit
     );
 
-
+    PROCESS  (ui_in, uo_out)
+    BEGIN
+        p1_btn_left_in <= ui_in(0);
+        p1_btn_right_in <= ui_in(1);
+        p2_btn_left_in <= ui_in(2);
+        p2_btn_right_in <= ui_in(3);
+        start_btn_in <= ui_in(4);
+        leds_out <= uo_out(5 DOWNTO 0); 
+    END process;
+    
 	-- Timer-Counter-Prozess (taktsynchroner Prozess)
 	PROCESS (clk) -- (nur) Taktsignal in Sensitivitätsliste
 	BEGIN
@@ -66,7 +81,7 @@ BEGIN
 	PROCESS (clk) -- (nur) Taktsignal in Sensitivitätsliste
 	BEGIN
 		IF rising_edge (clk) THEN
-		    IF (reset = '1') then
+		    IF (rst_n = '1') then
 		        state <= s_reset;
 		    ELSE
 			    state <= next_state;
