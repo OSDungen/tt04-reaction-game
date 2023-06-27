@@ -2,18 +2,18 @@ LIBRARY IEEE;
 USE IEEE.std_logic_1164.ALL;
 USE IEEE.numeric_std.ALL;
 
-ENTITY ALGORITHMUS IS
+ENTITY tt_um_algorithmus_OSDungen IS
 	PORT (
 		clk : IN STD_LOGIC; -- 25 kHz
 		reset: IN STD_LOGIC;
 		p1_btn_left_in, p1_btn_right_in, p2_btn_left_in, p2_btn_right_in, start_btn_in : IN STD_LOGIC;
 		leds_out : out STD_LOGIC_VECTOR(5 DOWNTO 0)
 		  );
-END ALGORITHMUS;
+END tt_um_algorithmus_OSDungen;
 
 
 
-ARCHITECTURE RTL OF ALGORITHMUS IS
+ARCHITECTURE RTL OF tt_um_algorithmus_OSDungen IS
 
 	COMPONENT RANDOM IS
 		PORT (
